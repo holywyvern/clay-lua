@@ -20,57 +20,58 @@ static void
 clay_lua_handleError(Clay_ErrorData error)
 {
   lua_State *L = error.userData;
-  lua_getglobal(L, "print");
+  lua_pushliteral(L, "Clay Error: ");
   switch (error.errorType)
   {
     case CLAY_ERROR_TYPE_TEXT_MEASUREMENT_FUNCTION_NOT_PROVIDED:
     {
-      lua_pushliteral(L, "[Measure Text Function not Provided]");
+      lua_pushliteral(L, "[Measure Text Function not Provided] ");
       break;
     }
     case CLAY_ERROR_TYPE_ARENA_CAPACITY_EXCEEDED:
     {
-      lua_pushliteral(L, "[Arena Capacity Exceeded]");
+      lua_pushliteral(L, "[Arena Capacity Exceeded] ");
       break;
     }
     case CLAY_ERROR_TYPE_ELEMENTS_CAPACITY_EXCEEDED:
     {
-      lua_pushliteral(L, "[Elements Capacity Exceeded]");
+      lua_pushliteral(L, "[Elements Capacity Exceeded] ");
       break;
     }
     case CLAY_ERROR_TYPE_TEXT_MEASUREMENT_CAPACITY_EXCEEDED:
     {
-      lua_pushliteral(L, "[Text Measurement Capaicty Exceeded]");
+      lua_pushliteral(L, "[Text Measurement Capaicty Exceeded] ");
       break;
     }
     case CLAY_ERROR_TYPE_DUPLICATE_ID:
     {
-      lua_pushliteral(L, "[Duplicate ID]");
+      lua_pushliteral(L, "[Duplicate ID] ");
       break;
     }
     case CLAY_ERROR_TYPE_FLOATING_CONTAINER_PARENT_NOT_FOUND:
     {
-      lua_pushliteral(L, "[Parent Not Found]");
+      lua_pushliteral(L, "[Parent Not Found] ");
       break;
     }
     case CLAY_ERROR_TYPE_PERCENTAGE_OVER_1:
     {
-      lua_pushliteral(L, "[Percentage Over 1]");
+      lua_pushliteral(L, "[Percentage Over 1] ");
       break;
     }
     case CLAY_ERROR_TYPE_INTERNAL_ERROR:
     {
-      lua_pushliteral(L, "[Internal Error]");
+      lua_pushliteral(L, "[Internal Error] ");
       break;
     }  
     default:
     {
-      lua_pushliteral(L, "[Unknown Error]");
+      lua_pushliteral(L, "[Unknown Error] ");
       break;
     }
   }
   lua_pushlstring(L, error.errorText.chars, error.errorText.length);
-  lua_call(L, 2, 0);
+  lua_concat(L, 3);
+  lua_error(L);
 }
 
 static int
