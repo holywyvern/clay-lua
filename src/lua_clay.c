@@ -943,23 +943,28 @@ clay_lua_build_element_userData(lua_State *L, int idx, void **data)
   *data = (void *)(uintptr_t)luaL_ref(L, -1);
 }
 
+static void
+clay_lua_configure_element(lua_State *L, int idx, Clay_ElementDeclaration *config)
+{
+  if (!lua_istable(L, idx)) return;
+
+  clay_lua_build_element_backgroundColor(L, idx, &(config->backgroundColor));
+  clay_lua_build_element_border(L, idx, &(config->border));
+  clay_lua_build_element_cornerRadius(L, idx, &(config->cornerRadius));
+  clay_lua_build_element_custom(L, idx, &(config->custom));
+  clay_lua_build_element_floating(L, idx, &(config->floating));
+  clay_lua_build_element_id(L, idx, &(config->id));
+  clay_lua_build_element_image(L, idx, &(config->image));
+  clay_lua_build_element_layout(L, idx, &(config->layout));
+  clay_lua_build_element_scroll(L, idx, &(config->scroll));
+  clay_lua_build_element_userData(L, idx, &(config->userData));  
+}
+
 static int
 l_configureOpenElement(lua_State *L)
 {
   Clay_ElementDeclaration config = (Clay_ElementDeclaration){0};
-  if (lua_istable(L, 1))
-  {
-    clay_lua_build_element_backgroundColor(L, 1, &(config.backgroundColor));
-    clay_lua_build_element_border(L, 1, &(config.border));
-    clay_lua_build_element_cornerRadius(L, 1, &(config.cornerRadius));
-    clay_lua_build_element_custom(L, 1, &(config.custom));
-    clay_lua_build_element_floating(L, 1, &(config.floating));
-    clay_lua_build_element_id(L, 1, &(config.id));
-    clay_lua_build_element_image(L, 1, &(config.image));
-    clay_lua_build_element_layout(L, 1, &(config.layout));
-    clay_lua_build_element_scroll(L, 1, &(config.scroll));
-    clay_lua_build_element_userData(L, 1, &(config.userData));
-  }
+  clay_lua_configure_element(L, 1, &config);
   Clay__ConfigureOpenElement(config);
   return 0;
 }
@@ -1346,20 +1351,15 @@ l_setMeasureTextFunction(lua_State *L)
  * If the element has no children, you can skip the function
  */
 static int
-l_call(lua_State *L)
+l__call(lua_State *L)
 {
-  lua_pushcfunction(L, l_openElement);
-  lua_call(L, 0, 0);
-  // ----
-  lua_pushcfunction(L, l_configureOpenElement);
-  lua_pushvalue(L, 1);
-  lua_call(L, 1, 0);
-  // ----
-  lua_pushvalue(L, 2);
-  if (!lua_isnil(L, -1)) lua_call(L, 0, 0);
-  // ----
-  lua_pushcfunction(L, l_closeElement);
-  lua_call(L, 0, 0);
+  Clay__OpenElement();
+  Clay_ElementDeclaration config = (Clay_ElementDeclaration){0};
+  clay_lua_configure_element(L, 2, &config);
+  Clay__ConfigureOpenElement(config);
+  lua_pushvalue(L, 3);
+  if (lua_isfunction(L, -1)) lua_call(L, 0, 0);
+  Clay__CloseElement();
   return 0;
 }
 
@@ -1395,7 +1395,6 @@ luaopen_clay(lua_State *L)
   CLAY_LUA_FN(pointerOver);
   CLAY_LUA_FN(getScrollContainerData);
   CLAY_LUA_FN(text);
-  CLAY_LUA_FN(call);
   /* Constants */
   CLAY_LUA_CONST(LEFT_TO_RIGHT);
   CLAY_LUA_CONST(TOP_TO_BOTTOM);
@@ -1426,7 +1425,7 @@ luaopen_clay(lua_State *L)
   int meta = lua_gettop(L);
   lua_pushboolean(L, 0);
   lua_setfield(L, meta, "__metatable");
-  lua_pushcfunction(L, l_call);
+  lua_pushcfunction(L, l__call);
   lua_setfield(L, meta, "__call");
   lua_pushvalue(L, meta);
   lua_setmetatable(L, clay);

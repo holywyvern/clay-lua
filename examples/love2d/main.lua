@@ -65,11 +65,11 @@ local textConfig = { fontSize = 12, textColor = COLOR_WHITE }
 local font = love.graphics.newFont()
 
 local function SidebarItemComponent()
-  clay.call(sidebarItemConfig)
+  clay(sidebarItemConfig)
 end
 
 local function MainContent()
-  clay.call {
+  clay {
     id = "MainContent",
     layout = {
       sizing = { 
@@ -100,10 +100,10 @@ end
 
 function love.draw()
   clay.beginLayout()
-  clay.call(outerConfig, function ()
-    clay.call(sidebarConfig, function ()
-      clay.call(outerPictureConfig, function ()
-        clay.call(pictureConfig)
+  clay(outerConfig, function ()
+    clay(sidebarConfig, function ()
+      clay(outerPictureConfig, function ()
+        clay(pictureConfig)
         clay.text("Clay - UI Library", textConfig)
       end)
       for i = 1, 5 do
