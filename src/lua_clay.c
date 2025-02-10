@@ -340,12 +340,12 @@ clay_lua_build_render_command(lua_State *L, Clay_RenderCommand *data)
     }
     case CLAY_RENDER_COMMAND_TYPE_SCISSOR_START:
     {
-      lua_pushliteral(L, "scissor_start");
+      lua_pushliteral(L, "scissorStart");
       break;
     }
     case CLAY_RENDER_COMMAND_TYPE_SCISSOR_END:
     {
-      lua_pushliteral(L, "scissor_end");
+      lua_pushliteral(L, "scissorEnd");
       break;
     }
     case CLAY_RENDER_COMMAND_TYPE_CUSTOM:
@@ -880,7 +880,7 @@ clay_lua_build_sizing(lua_State *L, int idx, Clay_Sizing *sizing)
   if (lua_isstring(L, idx))
   {
     clay_lua_build_sizing_axis(L, idx, &(sizing->width));
-    sizing->height = sizing->width;    
+    sizing->height = sizing->width;
   }
   else if (lua_istable(L, idx))
   {
