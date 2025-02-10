@@ -1358,8 +1358,7 @@ l__call(lua_State *L)
   Clay_ElementDeclaration config = (Clay_ElementDeclaration){0};
   clay_lua_configure_element(L, 2, &config);
   Clay__ConfigureOpenElement(config);
-  lua_pushvalue(L, 3);
-  if (lua_isfunction(L, -1)) lua_call(L, 0, 0);
+  if (lua_isfunction(L, 3)) lua_pcall(L, 0, 0, 3);
   Clay__CloseElement();
   return 0;
 }
