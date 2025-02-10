@@ -902,16 +902,16 @@ clay_lua_build_element_layout(lua_State *L, int idx, Clay_LayoutConfig *data)
   int layout = lua_gettop(L);
   lua_getfield(L, layout, "childAlignment");
   clay_lua_build_alignment(L, lua_gettop(L), &(data->childAlignment));
-  lua_getfield(L, idx, "childGap");
+  lua_getfield(L, layout, "childGap");
   if (lua_isnumber(L, -1))
   {
     data->childGap = (uint16_t)lua_tonumber(L, -1);
   }
-  lua_getfield(L, idx, "layoutDirection");
+  lua_getfield(L, layout, "layoutDirection");
   clay_lua_build_layout_direction(L, lua_gettop(L), &(data->layoutDirection));
-  lua_getfield(L, idx, "padding");
+  lua_getfield(L, layout, "padding");
   clay_lua_build_padding(L, lua_gettop(L), &(data->padding));
-  lua_getfield(L, idx, "sizing");
+  lua_getfield(L, layout, "sizing");
   clay_lua_build_sizing(L, lua_gettop(L), &(data->sizing));
 }
 

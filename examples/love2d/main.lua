@@ -72,13 +72,44 @@ local function MainContent()
   clay {
     id = "MainContent",
     layout = {
-      sizing = { 
-        width = "grow",
-        height = "grow"
-      }
+      sizing = "grow"
     },
     backgroundColor = COLOR_LIGHT
   }
+end
+
+local COMMAND_RENDERS = {}
+
+function COMMAND_RENDERS.rectangle(command)
+  local bb = command.boundingBox
+  local color = command.backgroundColor
+  love.graphics.setColor(color.r / 255, color.g / 255, color.b / 255, color.a / 255)
+  love.graphics.rectangle("fill", bb.x, bb.y, bb.width, bb.height)
+end
+
+function COMMAND_RENDERS.border(command)
+  local bb = command.boundingBox
+end
+
+function COMMAND_RENDERS.text(command)
+  local bb = command.boundingBox
+  local color = command.textColor
+  love.graphics.setFont(font)
+  love.graphics.setColor(color.r / 255, color.g / 255, color.b / 255, color.a / 255)
+end
+
+function COMMAND_RENDERS.image(command)
+  local bb = command.boundingBox
+  local img = command.imageData
+end
+
+function COMMAND_RENDERS.scissorStart(command)
+  local bb = command.boundingBox
+  love.graphics.setScissor(bb.x, bb.y, bb.width, bb.height)
+end
+
+function COMMAND_RENDERS.scissorEnd(command)
+  love.graphics.setScissor()
 end
 
 local function measureText(text, config)
@@ -113,7 +144,12 @@ function love.draw()
     MainContent()
   end)
   local commands = clay.endLayout()
+  love.graphics.clear()
   for _, command in ipairs(commands) do
+    local render = COMMAND_RENDERS[command.commandType]
+    if render then
+      render(command)
+    end
   end
 end
 
