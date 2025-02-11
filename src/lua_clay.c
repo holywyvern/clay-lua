@@ -550,14 +550,21 @@ clay_lua_build_element_floatingAttatchTo(lua_State *L, int idx, Clay_FloatingAtt
   }
 }
 
+static Clay_String
+clay_lua_toString(lua_State *L, int idx)
+{
+  size_t len;
+  const char *str = lua_tolstring(L, idx, &len);
+  Clay_String text = (Clay_String){(int32_t)len, clay_lua_storeString(str, len)};
+  return text;
+}
+
 static void
 clay_lua_build_element_parentId(lua_State *L, int idx, uint32_t *parentId)
 {
   if (lua_isnil(L, idx)) return;
 
-  size_t len;
-  const char *str = lua_tolstring(L, idx, &len);
-  Clay_String key = (Clay_String){(int32_t)len, clay_lua_storeString(str, len)};
+  Clay_String key = clay_lua_toString(L, idx);
   *parentId = Clay_GetElementId(key).id;
 }
 
@@ -666,9 +673,7 @@ clay_lua_build_element_id(lua_State *L, int idx, Clay_ElementId *id)
   lua_getfield(L, idx, "id");
   if (lua_isnil(L, -1)) return;
 
-  size_t len;
-  const char *str = lua_tolstring(L, -1, &len);
-  Clay_String key = (Clay_String){(int32_t)len, clay_lua_storeString(str, len)};
+  Clay_String key = clay_lua_toString(L, -1);
   *id = Clay__HashString(key, 0, 0);
 }
 
@@ -1117,9 +1122,7 @@ l_onHover(lua_State *L)
 static int
 l_pointerOver(lua_State *L)
 {
-  size_t len;
-  const char *str = lua_tolstring(L, 1, &len);
-  Clay_String key = (Clay_String){(int32_t)len, clay_lua_storeString(str, len)};
+  Clay_String key = clay_lua_toString(L, 1);
   Clay_ElementId id = Clay_GetElementId(key);
   lua_pushboolean(L, Clay_PointerOver(id));
   return 1;
@@ -1170,9 +1173,7 @@ l_scrollPosition__newindex(lua_State *L)
 static int
 l_getScrollContainerData(lua_State *L)
 {
-  size_t len;
-  const char *str = lua_tolstring(L, 1, &len);
-  Clay_String key = (Clay_String){(int32_t)len, clay_lua_storeString(str, len)};
+  Clay_String key = clay_lua_toString(L, 1);
   Clay_ElementId id = Clay_GetElementId(key);
   Clay_ScrollContainerData data = Clay_GetScrollContainerData(id);
   lua_newtable(L);
@@ -1257,9 +1258,7 @@ clay_lua_build_element_textConfig(lua_State *L, int idx, Clay_TextElementConfig 
 static int
 l_text(lua_State *L)
 {
-  size_t len;
-  const char *str = lua_tolstring(L, 1, &len);
-  Clay_String text = (Clay_String){(int32_t)len, clay_lua_storeString(str, len)};
+  Clay_String text = clay_lua_toString(L, 1);
   Clay_TextElementConfig *config = &Clay_TextElementConfig_DEFAULT;
   if (lua_istable(L, 2))
   {
